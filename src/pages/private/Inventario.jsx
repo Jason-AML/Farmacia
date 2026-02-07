@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Layout } from "../../layout/Layout";
+import { ModalControl } from "../../components/modal/ModalControl";
+import { AddProductModal } from "../../components/modal/contain/AddProductModal";
 
 export const Inventario = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -143,6 +145,12 @@ export const Inventario = () => {
       {/* Main Content Area */}
       <main className="max-w-[1440px] mx-auto p-6 lg:p-10">
         {/* Dashboard Header */}
+        <div className="flex justify-end">
+          <ModalControl action="Add Product">
+            {({ closeModal }) => <AddProductModal closeModal={closeModal} />}
+          </ModalControl>
+        </div>
+
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
           <div>
             <h2 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">
