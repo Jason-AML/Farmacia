@@ -3,7 +3,7 @@ import { useState } from "react";
 export const TopNavbar = () => {
   const [searchQuery, setSearchQuery] = useState("");
   return (
-    <header className="h-16 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md sticky top-0 z-10 px-8 flex items-center justify-between">
+    <header className="h-16 border-b z-1 border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md sticky top-0  px-8 flex items-center justify-between">
       <div className="w-96">
         <div className="relative group">
           <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl group-focus-within:text-primary transition-colors">
