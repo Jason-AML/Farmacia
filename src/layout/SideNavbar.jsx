@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 export const SideNavbar = () => {
   const navItems = [
@@ -20,7 +20,7 @@ export const SideNavbar = () => {
   ];
 
   return (
-    <aside className="w-64 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col fixed h-full">
+    <aside className="w-64 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col z-10 fixed h-full">
       <div className="p-6 flex items-center gap-3">
         <div className="bg-primary/20 p-2 rounded-lg">
           <span className="material-symbols-outlined text-primary text-2xl font-bold">
