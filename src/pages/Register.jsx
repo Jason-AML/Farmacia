@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { useAuthUser } from "../hooks/useAuthUser";
-import { Link, useNavigate } from "react-router-dom";
-export const Login = () => {
+import { Link } from "react-router-dom";
+
+export const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const { signUpUser } = useAuthUser();
-  const navigate = useNavigate();
+  const { signUpNewUser } = useAuthUser();
   const backgroundStyle = {
     backgroundImage:
       "url('https://lh3.googleusercontent.com/aida-public/AB6AXuDezIF_yMJA_W6Qc1NmoAXNTF5nkV8wHGWqzkKfdcdxwxbrSbpVZRI_FTdOwPu10kty3bSTeXAGJdOgdNWkYzQ39m9iTfLceZ_HpdbnrEnEBWGzIpqVoSo5hsVdI6Qg61tLdVn08f3YA0bAnayBa3-OKihoWfuSOrrIlPpSSoeu_WhpSMVPIzZIpRfnjs8oL0cqL4n5BPddPsMtqTyoCcE96QSE6_KpjWA4cIzR7M1XpdUi5lGpmxrm6ZjCOAddAcwxrzjSckvQfg8')",
@@ -25,11 +25,21 @@ export const Login = () => {
     setLoading(true);
 
     try {
-      await signUpUser(email, password);
-      console.log("Bienvenido");
-      navigate("/dashboard");
+      await signUpNewUser(email, password);
+      console.log("Usuario registrado correctamente");
     } catch (error) {
       console.error("Error:", error.message);
+
+      if (
+        error.message.includes("already registered") ||
+        error.message.includes("User already registered")
+      ) {
+        console.log("Este correo ya está registrado");
+      } else if (error.message.includes("Password should be at least")) {
+        console.log("La contraseña debe tener al menos 6 caracteres");
+      } else {
+        console.log(error.message || "Error al registrar usuario");
+      }
     } finally {
       setLoading(false);
     }
@@ -86,7 +96,7 @@ export const Login = () => {
                   </span>
                 </div>
                 <h1 className="text-3xl font-black tracking-tight @[480px]:text-4xl text-[#0d191b] dark:text-white">
-                  Pharmacy Sign In
+                  Pharmacy Register
                 </h1>
                 <p className="text-sm font-normal leading-normal text-slate-500 dark:text-slate-400">
                   Please enter your credentials to access the management
@@ -163,8 +173,8 @@ export const Login = () => {
                 </div>
               </form>
               {/*<!-- Footer Links -->*/}
-              <Link to="/register" className="hover:text-primary">
-                No tienes cuenta?
+              <Link to="/" className="hover:text-primary">
+                Ya tienes cuenta?
               </Link>
               <div className="pt-8 flex flex-col items-center gap-4">
                 <div className="flex items-center gap-4 text-sm font-medium text-slate-500 dark:text-slate-400">
