@@ -1,9 +1,12 @@
 import { useState } from "react";
-
+import { useAuthUser } from "../hooks/useAuthUser";
+import { Link, useNavigate } from "react-router-dom";
 export const Login = () => {
-  const [user, setUser] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const { signUpUser } = useAuthUser();
+  const navigate = useNavigate();
   const backgroundStyle = {
     backgroundImage:
       "url('https://lh3.googleusercontent.com/aida-public/AB6AXuDezIF_yMJA_W6Qc1NmoAXNTF5nkV8wHGWqzkKfdcdxwxbrSbpVZRI_FTdOwPu10kty3bSTeXAGJdOgdNWkYzQ39m9iTfLceZ_HpdbnrEnEBWGzIpqVoSo5hsVdI6Qg61tLdVn08f3YA0bAnayBa3-OKihoWfuSOrrIlPpSSoeu_WhpSMVPIzZIpRfnjs8oL0cqL4n5BPddPsMtqTyoCcE96QSE6_KpjWA4cIzR7M1XpdUi5lGpmxrm6ZjCOAddAcwxrzjSckvQfg8')",
@@ -11,12 +14,25 @@ export const Login = () => {
     backgroundPosition: "center",
     minHeight: "100vh",
   };
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(user, email, password);
-    setUser("");
-    setEmail("");
-    setPassword("");
+
+    if (!email || !password) {
+      console.log("Email, contraseña o ID  son obligatorios");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      await signUpUser(email, password);
+      console.log("Bienvenido");
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("Error:", error.message);
+    } finally {
+      setLoading(false);
+    }
   };
   return (
     <>
@@ -38,7 +54,7 @@ export const Login = () => {
                   </span>
                 </div>
                 <h2 className="text-3xl font-bold tracking-tight">
-                  PharmaCore Pro
+                  PharmaRose
                 </h2>
               </div>
               <p className="text-lg font-light leading-relaxed opacity-90">
@@ -79,26 +95,6 @@ export const Login = () => {
               </div>
               {/*<!-- Form Section -->*/}
               <form className="space-y-5" onSubmit={handleSubmit}>
-                {/*<!-- Pharmacy ID -->*/}
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-[#0d191b] dark:text-slate-200 ml-1">
-                    Pharmacy ID
-                  </label>
-                  <div className="group relative flex items-center h-14 w-full">
-                    <div className="absolute left-4 text-slate-400 group-focus-within:text-primary transition-colors">
-                      <span className="material-symbols-outlined text-[20px]">
-                        apartment
-                      </span>
-                    </div>
-                    <input
-                      className="w-full h-full pl-12 pr-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 text-[#0d191b] dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-primary/50 focus:border-primary focus:bg-white dark:focus:bg-slate-800 transition-all outline-none"
-                      placeholder="Enter your unique ID"
-                      type="text"
-                      value={user}
-                      onChange={(e) => setUser(e.target.value)}
-                    />
-                  </div>
-                </div>
                 {/*<!-- Username / Email -->*/}
                 <div className="space-y-2">
                   <label className="text-sm font-semibold text-[#0d191b] dark:text-slate-200 ml-1">
@@ -157,13 +153,19 @@ export const Login = () => {
                 </div>
                 {/*<!-- Action Button -->*/}
                 <div className="pt-4">
-                  <button className="cursor-pointer w-full h-14 bg-primary hover:bg-primary/90 text-[#0d191b] font-bold text-lg rounded-xl shadow-lg shadow-primary/20 transition-all flex items-center justify-center gap-2">
+                  <button
+                    disabled={loading}
+                    className="cursor-pointer w-full h-14 bg-primary hover:bg-primary/90 text-[#0d191b] font-bold text-lg rounded-xl shadow-lg shadow-primary/20 transition-all flex items-center justify-center gap-2"
+                  >
                     <span>Sign In</span>
                     <span className="material-symbols-outlined">login</span>
                   </button>
                 </div>
               </form>
               {/*<!-- Footer Links -->*/}
+              <Link to="/register" className="hover:text-primary">
+                No tienes cuenta?
+              </Link>
               <div className="pt-8 flex flex-col items-center gap-4">
                 <div className="flex items-center gap-4 text-sm font-medium text-slate-500 dark:text-slate-400">
                   <a
