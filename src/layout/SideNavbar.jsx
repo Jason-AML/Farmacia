@@ -1,24 +1,26 @@
 import { Link } from "react-router-dom";
+import { useAuthContext } from "../context/AuthContext";
+import { useAuthUser } from "../hooks/useAuthUser";
 
 export const SideNavbar = () => {
+  const { user, loadingAuth } = useAuthContext();
+  const { logoutUser } = useAuthUser();
   const navItems = [
     { name: "Dashboard", icon: "dashboard", path: "/dashboard" },
     {
       name: "Inventario",
       icon: "inventory_2",
-
       path: "/inventario",
     },
     {
       name: "Ventas",
       icon: "shopping_cart",
-
       path: "/ventas",
     },
     { name: "Clientes", icon: "group", path: "/clientes" },
     { name: "Reportes", icon: "bar_chart", path: "/reportes" },
   ];
-
+  if (loadingAuth) return <p>cargando auth</p>;
   return (
     <aside className="w-64 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col z-10 fixed h-full">
       <div className="p-6 flex items-center gap-3">
@@ -79,12 +81,21 @@ export const SideNavbar = () => {
             }}
           />
           <div className="flex-1 overflow-hidden">
-            <p className="text-sm font-semibold truncate text-slate-900 dark:text-white">
-              Dr. Sarah Smith
-            </p>
-            <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
-              Pharmacist
-            </p>
+            {user ? (
+              <>
+                <p className="text-sm font-semibold truncate text-slate-900 dark:text-white">
+                  {user.email}
+                </p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
+                  Pharmacist
+                </p>
+                <button onClick={logoutUser} className="btn btn-error">
+                  logout
+                </button>
+              </>
+            ) : (
+              <p>No hay user</p>
+            )}
           </div>
         </div>
       </div>
