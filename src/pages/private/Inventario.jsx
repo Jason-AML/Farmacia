@@ -1,13 +1,12 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Layout } from "../../layout/Layout";
 import { ModalControl } from "../../components/modal/ModalControl";
-import { AddProductModal } from "../../components/modal/contain/AddProductModal";
+import { AddProductModal } from "../../components/modal/content/AddProductModal";
 
 export const Inventario = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
-
   const products = [
     {
       id: 1,
@@ -108,6 +107,25 @@ export const Inventario = () => {
         "https://lh3.googleusercontent.com/aida-public/AB6AXuCY2ZA6Q5c3VkzRvGfZsa2iCOZV-vuaFT_vO_uez2HyZ_0gmaj19l1GK1wNuG4zhO_ZyF0Ggwt9g3hvCgxlz6grZmiMeaZrsXjViHr6cx1njJCpxo7CorfWx4rr8LI_YFrBikdvWnh4sdgBrVC39E96RwitTJFh11ZpxAgWjJ9VfY7zkot3f9LndiN_NwQEqmPYgxfrphjENC-9vlettJqCmJPhpBoNz-975QOd-uW7O5q8_EgyPC2CFOeU0yfEnuHcR_P3A-WiTcM",
     },
   ];
+  const visible = useMemo(() => {
+    switch (activeTab) {
+      case "all":
+        return products;
+
+      case "orders":
+        return [...products]
+          .filter((p) => p.stock > 0)
+          .sort((a, b) => a.stock - b.stock);
+
+      case "expiring":
+        return products.filter(
+          (p) => p.status === "critical" || p.status === "low",
+        );
+
+      default:
+        return products;
+    }
+  }, [activeTab]);
 
   const tabs = [
     { id: "all", label: "All Products" },
@@ -166,7 +184,9 @@ export const Inventario = () => {
             {tabs.map((tab) => (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
+                onClick={() => {
+                  setActiveTab(tab.id);
+                }}
                 className={`px-5 py-2 rounded-lg text-sm font-semibold transition-all ${
                   activeTab === tab.id
                     ? "bg-white dark:bg-slate-700 shadow-sm font-bold text-primary"
@@ -180,8 +200,8 @@ export const Inventario = () => {
         </div>
 
         {/* Inventory Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
-          {products.map((product) => {
+        <div className="grid grid-cols-1 min-h-full  sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
+          {visible.map((product) => {
             const statusClasses = getStatusClasses(product.status);
 
             return (
