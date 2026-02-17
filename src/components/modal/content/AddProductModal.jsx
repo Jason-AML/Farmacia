@@ -1,31 +1,40 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { createProduct, getStorage } from "../../../services/productService";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const AddProductModal = ({ closeModal }) => {
+  const [almacenes, setAlmacenes] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const queryClient = useQueryClient();
+  const [imagePreview, setImagePreview] = useState(null);
   const [formData, setFormData] = useState({
-    productName: "",
-    brandName: "",
-    genericName: "",
-    category: "",
-    sku: "",
-    initialQuantity: "",
-    unitPrice: "",
-    sellingPrice: "",
-    tax: "",
-    reorderLevel: "",
-    expiryDate: "",
-    batchNumber: "",
-    storageLocation: "",
-    productImage: null,
+    name: "",
+    brand_name: "",
+    generic_name: "",
+    cantidad: "",
+    precio_compra: "",
+    precio_venta: "",
+    impuesto: "5",
+    fecha_expiracion: "",
+    lugar_almacenamiento: "",
   });
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
 
-  const categories = [
-    "Select Category",
-    "Antibiotics",
-    "Analgesics",
-    "Antivirals",
-    "Supplements",
-  ];
+    if (!file.type.startsWith("image/")) {
+      alert("Solo se permiten imágenes");
+      return;
+    }
 
+    if (file.size > 2 * 1024 * 1024) {
+      alert("La imagen no puede superar los 2MB");
+      return;
+    }
+
+    setFormData((prev) => ({ ...prev, productImage: file }));
+    setImagePreview(URL.createObjectURL(file)); // para mostrar preview
+  };
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -34,34 +43,59 @@ export const AddProductModal = ({ closeModal }) => {
     }));
   };
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file && file.size <= 2 * 1024 * 1024) {
-      // 2MB max
-      setFormData((prev) => ({
-        ...prev,
-        productImage: file,
-      }));
-    } else {
-      alert("File size must be less than 2MB");
-    }
-  };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
-    // Aquí iría la lógica para enviar los datos
-  };
+    setLoading(true);
+    try {
+      await createProduct(formData);
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+      closeModal();
+    } catch (error) {
+      console.log("Error handleSubmit formulario modal", error);
+    } finally {
+      setLoading(false);
+    }
 
+    console.log("Form submitted:", formData);
+  };
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      alert("Solo se permiten imágenes");
+      return;
+    }
+
+    if (file.size > 2 * 1024 * 1024) {
+      alert("La imagen no puede superar los 2MB");
+      return;
+    }
+
+    setImageFile(file);
+    setPreview(URL.createObjectURL(file));
+  };
   const calculateMargin = () => {
-    if (formData.unitPrice && formData.sellingPrice) {
+    if (formData.precio_compra && formData.precio_venta) {
       const margin =
-        ((formData.sellingPrice - formData.unitPrice) / formData.sellingPrice) *
+        ((formData.precio_venta - formData.precio_compra) /
+          formData.precio_venta) *
         100;
       return margin.toFixed(1);
     }
     return "--";
   };
+  useEffect(() => {
+    const fetchStorage = async () => {
+      try {
+        const result = await getStorage();
+        setAlmacenes(result);
+      } catch (error) {
+        console.log("Error al hacer fetchStorage:", error);
+      }
+    };
+    fetchStorage();
+  }, []);
 
   return (
     <div className=" fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
@@ -108,8 +142,8 @@ export const AddProductModal = ({ closeModal }) => {
                     </label>
                     <input
                       type="text"
-                      name="productName"
-                      value={formData.productName}
+                      name="name"
+                      value={formData.name}
                       onChange={handleChange}
                       className="block w-full rounded-lg border-slate-300 dark:border-slate-700 dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-secondary/50 focus:border-secondary transition-all sm:text-sm"
                       placeholder="e.g. Amoxicillin 500mg"
@@ -123,8 +157,8 @@ export const AddProductModal = ({ closeModal }) => {
                     </label>
                     <input
                       type="text"
-                      name="brandName"
-                      value={formData.brandName}
+                      name="brand_name"
+                      value={formData.brand_name}
                       onChange={handleChange}
                       className="block w-full rounded-lg border-slate-300 dark:border-slate-700 dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-secondary/50 focus:border-secondary transition-all sm:text-sm"
                       placeholder="e.g. Moxatag"
@@ -137,49 +171,12 @@ export const AddProductModal = ({ closeModal }) => {
                     </label>
                     <input
                       type="text"
-                      name="genericName"
-                      value={formData.genericName}
+                      name="generic_name"
+                      value={formData.generic_name}
                       onChange={handleChange}
                       className="block w-full rounded-lg border-slate-300 dark:border-slate-700 dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-secondary/50 focus:border-secondary transition-all sm:text-sm"
                       placeholder="e.g. Amoxicillin"
                     />
-                  </div>
-
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">
-                      Category
-                    </label>
-                    <select
-                      name="category"
-                      value={formData.category}
-                      onChange={handleChange}
-                      className="block w-full rounded-lg border-slate-300 dark:border-slate-700 dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-secondary/50 focus:border-secondary transition-all sm:text-sm"
-                    >
-                      {categories.map((cat) => (
-                        <option key={cat} value={cat}>
-                          {cat}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">
-                      SKU / Barcode
-                    </label>
-                    <div className="relative">
-                      <input
-                        type="text"
-                        name="sku"
-                        value={formData.sku}
-                        onChange={handleChange}
-                        className="block w-full rounded-lg border-slate-300 dark:border-slate-700 dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-secondary/50 focus:border-secondary transition-all sm:text-sm pr-10"
-                        placeholder="PH-889021"
-                      />
-                      <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
-                        barcode_scanner
-                      </span>
-                    </div>
                   </div>
                 </div>
               </section>
@@ -199,8 +196,8 @@ export const AddProductModal = ({ closeModal }) => {
                     </label>
                     <input
                       type="number"
-                      name="initialQuantity"
-                      value={formData.initialQuantity}
+                      name="cantidad"
+                      value={formData.cantidad}
                       onChange={handleChange}
                       className="block w-full rounded-lg border-slate-300 dark:border-slate-700 dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-secondary/50 focus:border-secondary transition-all sm:text-sm"
                       placeholder="0"
@@ -213,8 +210,8 @@ export const AddProductModal = ({ closeModal }) => {
                     </label>
                     <input
                       type="text"
-                      name="unitPrice"
-                      value={formData.unitPrice}
+                      name="precio_compra"
+                      value={formData.precio_compra}
                       onChange={handleChange}
                       className="block w-full rounded-lg border-slate-300 dark:border-slate-700 dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-secondary/50 focus:border-secondary transition-all sm:text-sm"
                       placeholder="0.00"
@@ -227,8 +224,8 @@ export const AddProductModal = ({ closeModal }) => {
                     </label>
                     <input
                       type="text"
-                      name="sellingPrice"
-                      value={formData.sellingPrice}
+                      name="precio_venta"
+                      value={formData.precio_venta}
                       onChange={handleChange}
                       className="block w-full rounded-lg border-slate-300 dark:border-slate-700 dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-secondary/50 focus:border-secondary transition-all sm:text-sm"
                       placeholder="0.00"
@@ -241,31 +238,12 @@ export const AddProductModal = ({ closeModal }) => {
                     </label>
                     <input
                       type="number"
-                      name="tax"
-                      value={formData.tax}
+                      name="impuesto"
+                      value={formData.impuesto}
                       onChange={handleChange}
                       className="block w-full rounded-lg border-slate-300 dark:border-slate-700 dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-secondary/50 focus:border-secondary transition-all sm:text-sm"
                       placeholder="5"
                     />
-                  </div>
-
-                  <div className="flex flex-col gap-1.5 md:col-span-2">
-                    <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">
-                      Reorder Level (Alert threshold)
-                    </label>
-                    <div className="relative">
-                      <input
-                        type="number"
-                        name="reorderLevel"
-                        value={formData.reorderLevel}
-                        onChange={handleChange}
-                        className="block w-full rounded-lg border-slate-300 dark:border-slate-700 dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-secondary/50 focus:border-secondary transition-all sm:text-sm"
-                        placeholder="10"
-                      />
-                      <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-slate-400 font-medium">
-                        Units
-                      </span>
-                    </div>
                   </div>
                 </div>
               </section>
@@ -285,24 +263,10 @@ export const AddProductModal = ({ closeModal }) => {
                     </label>
                     <input
                       type="date"
-                      name="expiryDate"
-                      value={formData.expiryDate}
+                      name="fecha_expiracion"
+                      value={formData.fecha_expiracion}
                       onChange={handleChange}
                       className="block w-full rounded-lg border-slate-300 dark:border-slate-700 dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-secondary/50 focus:border-secondary transition-all sm:text-sm"
-                    />
-                  </div>
-
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">
-                      Batch Number
-                    </label>
-                    <input
-                      type="text"
-                      name="batchNumber"
-                      value={formData.batchNumber}
-                      onChange={handleChange}
-                      className="block w-full rounded-lg border-slate-300 dark:border-slate-700 dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-secondary/50 focus:border-secondary transition-all sm:text-sm"
-                      placeholder="BN-2024-X"
                     />
                   </div>
 
@@ -310,14 +274,18 @@ export const AddProductModal = ({ closeModal }) => {
                     <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">
                       Storage Location
                     </label>
-                    <input
-                      type="text"
-                      name="storageLocation"
-                      value={formData.storageLocation}
+                    <select
+                      name="lugar_almacenamiento"
+                      value={formData.lugar_almacenamiento}
                       onChange={handleChange}
-                      className="block w-full rounded-lg border-slate-300 dark:border-slate-700 dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-secondary/50 focus:border-secondary transition-all sm:text-sm"
-                      placeholder="Shelf A, Row 4"
-                    />
+                    >
+                      <option value="">Selecciona un almacén</option>
+                      {almacenes.map((a) => (
+                        <option key={a.id} value={a.id}>
+                          {a.nombre}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                 </div>
               </section>
@@ -355,6 +323,13 @@ export const AddProductModal = ({ closeModal }) => {
                   <p className="mt-2 text-xs text-emerald-600 dark:text-emerald-400">
                     ✓ {formData.productImage.name}
                   </p>
+                )}
+                {imagePreview && (
+                  <img
+                    src={imagePreview}
+                    alt="Preview"
+                    className="mt-3 w-24 h-24 object-cover rounded-lg border border-slate-200"
+                  />
                 )}
               </section>
 
@@ -407,10 +382,11 @@ export const AddProductModal = ({ closeModal }) => {
             </button>
             <button
               type="submit"
+              disabled={loading}
               className="px-8 py-2.5 rounded-lg text-sm font-bold text-white bg-primary hover:bg-teal-700 transition-all shadow-lg shadow-primary/20 flex items-center gap-2 active:scale-95"
             >
               <span className="material-symbols-outlined text-lg">save</span>
-              Save Product
+              {loading ? "Save Product" : "Enviando"}
             </button>
           </div>
         </form>
