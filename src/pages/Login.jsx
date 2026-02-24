@@ -85,10 +85,10 @@ export const Login = () => {
                     Secure Access
                   </span>
                 </div>
-                <h1 className="text-3xl font-black tracking-tight @[480px]:text-4xl text-[#0d191b] dark:text-white">
+                <h1 className="text-3xl font-black tracking-tight @[480px]:text-4xl text-[#0d191b] ">
                   Pharmacy Sign In
                 </h1>
-                <p className="text-sm font-normal leading-normal text-slate-500 dark:text-slate-400">
+                <p className="text-sm font-normal leading-normal text-slate-500 ">
                   Please enter your credentials to access the management
                   dashboard.
                 </p>
@@ -97,7 +97,7 @@ export const Login = () => {
               <form className="space-y-5" onSubmit={handleSubmit}>
                 {/*<!-- Username / Email -->*/}
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-[#0d191b] dark:text-slate-200 ml-1">
+                  <label className="text-sm font-semibold text-[#0d191b]  ml-1">
                     Username or Email
                   </label>
                   <div className="group relative flex items-center h-14 w-full">
@@ -107,7 +107,7 @@ export const Login = () => {
                       </span>
                     </div>
                     <input
-                      className="w-full h-full pl-12 pr-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 text-[#0d191b] dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-primary/50 focus:border-primary focus:bg-white dark:focus:bg-slate-800 transition-all outline-none"
+                      className="w-full h-full pl-12 pr-4 rounded-xl border border-slate-200  bg-slate-50  text-[#0d191b]  placeholder:text-slate-400 focus:ring-2 focus:ring-primary/50 focus:border-primary focus:bg-white  transition-all outline-none"
                       placeholder="e.g. johndoe@pharmacy.com"
                       type="email"
                       value={email}
@@ -118,7 +118,7 @@ export const Login = () => {
                 {/*<!-- Password -->*/}
                 <div className="space-y-2">
                   <div className="flex justify-between items-center px-1">
-                    <label className="text-sm font-semibold text-[#0d191b] dark:text-slate-200">
+                    <label className="text-sm font-semibold text-[#0d191b] ">
                       Password
                     </label>
                     <a
@@ -135,7 +135,7 @@ export const Login = () => {
                       </span>
                     </div>
                     <input
-                      className="w-full h-full pl-12 pr-12 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 text-[#0d191b] dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-primary/50 focus:border-primary focus:bg-white dark:focus:bg-slate-800 transition-all outline-none"
+                      className="w-full h-full pl-12 pr-12 rounded-xl border border-slate-200  bg-slate-50  text-[#0d191b]  placeholder:text-slate-400 focus:ring-2 focus:ring-primary/50 focus:border-primary focus:bg-white  transition-all outline-none"
                       placeholder="••••••••"
                       type="password"
                       value={password}
@@ -163,7 +163,10 @@ export const Login = () => {
                 </div>
               </form>
               {/*<!-- Footer Links -->*/}
-              <Link to="/register" className="hover:text-primary">
+              <Link
+                to="/register"
+                className="hover:text-primary text-black font-bold"
+              >
                 No tienes cuenta?
               </Link>
               <div className="pt-8 flex flex-col items-center gap-4">
@@ -188,8 +191,8 @@ export const Login = () => {
                     Terms of Service
                   </a>
                 </div>
-                <div className="text-[11px] font-bold text-slate-400 uppercase tracking-widest bg-slate-100 dark:bg-slate-800/50 px-3 py-1 rounded-full">
-                  Version 1.0.2-Build.24
+                <div className="text-[11px] font-bold text-slate-400 uppercase tracking-widest bg-slate-100  px-3 py-1 rounded-full">
+                  Version 1.1.0-Build.26
                 </div>
               </div>
             </div>

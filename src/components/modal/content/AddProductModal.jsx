@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import { createProduct, getStorage } from "../../../services/productService";
 import { useQueryClient } from "@tanstack/react-query";
+import { useProductContext } from "../../../context/ProductContext";
 
 export const AddProductModal = ({ closeModal }) => {
   const [almacenes, setAlmacenes] = useState([]);
   const [loading, setLoading] = useState(false);
   const queryClient = useQueryClient();
   const [imagePreview, setImagePreview] = useState(null);
+  const { categoria } = useProductContext();
   const [formData, setFormData] = useState({
     name: "",
     brand_name: "",
@@ -17,6 +19,7 @@ export const AddProductModal = ({ closeModal }) => {
     impuesto: "5",
     fecha_expiracion: "",
     lugar_almacenamiento: "",
+    categoria: "",
   });
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -51,39 +54,19 @@ export const AddProductModal = ({ closeModal }) => {
       queryClient.invalidateQueries({ queryKey: ["products"] });
       closeModal();
     } catch (error) {
-      console.log("Error handleSubmit formulario modal", error);
+      console.error("Error handleSubmit formulario modal", error);
     } finally {
       setLoading(false);
     }
-
-    console.log("Form submitted:", formData);
   };
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
 
-    if (!file.type.startsWith("image/")) {
-      alert("Solo se permiten imágenes");
-      return;
-    }
-
-    if (file.size > 2 * 1024 * 1024) {
-      alert("La imagen no puede superar los 2MB");
-      return;
-    }
-
-    setImageFile(file);
-    setPreview(URL.createObjectURL(file));
-  };
   const calculateMargin = () => {
-    if (formData.precio_compra && formData.precio_venta) {
-      const margin =
-        ((formData.precio_venta - formData.precio_compra) /
-          formData.precio_venta) *
-        100;
-      return margin.toFixed(1);
-    }
-    return "--";
+    const compra = parseFloat(formData.precio_compra);
+    const venta = parseFloat(formData.precio_venta);
+    if (!compra || !venta) return "--";
+
+    const margin = ((venta - compra) / venta) * 100;
+    return margin.toFixed(1);
   };
   useEffect(() => {
     const fetchStorage = async () => {
@@ -96,7 +79,11 @@ export const AddProductModal = ({ closeModal }) => {
     };
     fetchStorage();
   }, []);
-
+  useEffect(() => {
+    return () => {
+      if (imagePreview) URL.revokeObjectURL(imagePreview);
+    };
+  }, [imagePreview]);
   return (
     <div className=" fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
       <div className="bg-white dark:bg-slate-900 w-full max-w-5xl rounded-2xl shadow-2xl overflow-hidden my-auto">
@@ -177,6 +164,24 @@ export const AddProductModal = ({ closeModal }) => {
                       className="block w-full rounded-lg border-slate-300 dark:border-slate-700 dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-secondary/50 focus:border-secondary transition-all sm:text-sm"
                       placeholder="e.g. Amoxicillin"
                     />
+                  </div>
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-sm font-semibold flex  text-slate-700 gap-1.5 dark:text-slate-300">
+                      categoria <span className="text-red-500">*</span>
+                    </label>
+                    <select
+                      name="categoria"
+                      value={formData.categoria}
+                      onChange={handleChange}
+                    >
+                      {" "}
+                      <option value="">Selecciona una categoría</option>
+                      {categoria.map((c) => (
+                        <option key={c.id} value={c.id}>
+                          {c.nombre}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                 </div>
               </section>
@@ -386,7 +391,7 @@ export const AddProductModal = ({ closeModal }) => {
               className="px-8 py-2.5 rounded-lg text-sm font-bold text-white bg-primary hover:bg-teal-700 transition-all shadow-lg shadow-primary/20 flex items-center gap-2 active:scale-95"
             >
               <span className="material-symbols-outlined text-lg">save</span>
-              {loading ? "Save Product" : "Enviando"}
+              {loading ? "Enviando..." : "Save Product"}
             </button>
           </div>
         </form>
