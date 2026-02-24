@@ -22,20 +22,22 @@ const ProductProvider = ({ children }) => {
     queryFn: getProducts,
     refetchType: "active",
   });
+
   const {
     data: categoria,
-    isLoading,
-    isError,
-    error,
+    isLoading: isLoadingCategoria,
+    isError: isErrorCategoria,
+    error: errorCategoria,
   } = useQuery({
     queryKey: ["categoria"],
     queryFn: getCategoria,
     refetchType: "active",
   });
 
-  if (isLoading) return <Spinner />;
+  if (isLoadingProducts || isLoadingCategoria) return <Spinner />;
 
-  if (isError) return <p>Error: {error.message}</p>;
+  if (isErrorProducts) return <p>Error: {errorProducts.message}</p>;
+  if (isErrorCategoria) return <p>Error: {errorCategoria.message}</p>;
 
   return (
     <ProductContext.Provider value={{ products, categoria }}>
