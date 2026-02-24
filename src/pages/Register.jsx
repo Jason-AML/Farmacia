@@ -46,7 +46,7 @@ export const Register = () => {
   };
   return (
     <>
-      <div className="bg-background-light dark:bg-background-dark font-display text-[#0d191b] dark:text-white">
+      <div className="bg-background-light  font-display text-[#0d191b] ">
         <div className="flex min-h-screen">
           {/*<!-- Left Side: Visual Medical Panel -->*/}
           <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
@@ -75,7 +75,7 @@ export const Register = () => {
             <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black/60 via-transparent to-transparent z-10"></div>
           </div>
           {/*<!-- Right Side: Login Form -->*/}
-          <div className="w-full lg:w-1/2 flex items-center justify-center p-8 sm:p-12 lg:p-24 bg-white dark:bg-background-dark">
+          <div className="w-full lg:w-1/2 flex items-center justify-center p-8 sm:p-12 lg:p-24 bg-white ">
             <div className="w-full max-w-md space-y-8">
               {/*<!-- Header Section -->*/}
               <div className="space-y-2">
@@ -95,7 +95,7 @@ export const Register = () => {
                     Secure Access
                   </span>
                 </div>
-                <h1 className="text-3xl font-black tracking-tight @[480px]:text-4xl text-[#0d191b] dark:text-white">
+                <h1 className="text-3xl font-black tracking-tight @[480px]:text-4xl text-[#0d191b] ">
                   Pharmacy Register
                 </h1>
                 <p className="text-sm font-normal leading-normal text-slate-500 dark:text-slate-400">
@@ -107,7 +107,7 @@ export const Register = () => {
               <form className="space-y-5" onSubmit={handleSubmit}>
                 {/*<!-- Username / Email -->*/}
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-[#0d191b] dark:text-slate-200 ml-1">
+                  <label className="text-sm font-semibold text-[#0d191b]  ml-1">
                     Username or Email
                   </label>
                   <div className="group relative flex items-center h-14 w-full">
@@ -117,7 +117,7 @@ export const Register = () => {
                       </span>
                     </div>
                     <input
-                      className="w-full h-full pl-12 pr-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 text-[#0d191b] dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-primary/50 focus:border-primary focus:bg-white dark:focus:bg-slate-800 transition-all outline-none"
+                      className="w-full h-full pl-12 pr-4 rounded-xl border border-slate-200  bg-slate-50  text-[#0d191b]  placeholder:text-slate-400 focus:ring-2 focus:ring-primary/50 focus:border-primary focus:bg-white  transition-all outline-none"
                       placeholder="e.g. johndoe@pharmacy.com"
                       type="email"
                       value={email}
@@ -128,7 +128,7 @@ export const Register = () => {
                 {/*<!-- Password -->*/}
                 <div className="space-y-2">
                   <div className="flex justify-between items-center px-1">
-                    <label className="text-sm font-semibold text-[#0d191b] dark:text-slate-200">
+                    <label className="text-sm font-semibold text-[#0d191b] ">
                       Password
                     </label>
                     <a
@@ -145,7 +145,7 @@ export const Register = () => {
                       </span>
                     </div>
                     <input
-                      className="w-full h-full pl-12 pr-12 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 text-[#0d191b] dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-primary/50 focus:border-primary focus:bg-white dark:focus:bg-slate-800 transition-all outline-none"
+                      className="w-full h-full pl-12 pr-12 rounded-xl border border-slate-200  bg-slate-50  text-[#0d191b]  placeholder:text-slate-400 focus:ring-2 focus:ring-primary/50 focus:border-primary focus:bg-white  transition-all outline-none"
                       placeholder="••••••••"
                       type="password"
                       value={password}
@@ -173,7 +173,7 @@ export const Register = () => {
                 </div>
               </form>
               {/*<!-- Footer Links -->*/}
-              <Link to="/" className="hover:text-primary">
+              <Link to="/" className="hover:text-primary text-black font-bold">
                 Ya tienes cuenta?
               </Link>
               <div className="pt-8 flex flex-col items-center gap-4">
@@ -198,8 +198,8 @@ export const Register = () => {
                     Terms of Service
                   </a>
                 </div>
-                <div className="text-[11px] font-bold text-slate-400 uppercase tracking-widest bg-slate-100 dark:bg-slate-800/50 px-3 py-1 rounded-full">
-                  Version 1.0.2-Build.24
+                <div className="text-[11px] font-bold text-slate-400 uppercase tracking-widest bg-slate-100  px-3 py-1 rounded-full">
+                  Version 1.1.0-Build.26
                 </div>
               </div>
             </div>
