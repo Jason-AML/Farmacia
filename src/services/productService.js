@@ -22,7 +22,7 @@ export const getStorage = async () => {
 export const createProduct = async (formData) => {
   let imageUrl = null;
   if (formData.productImage) {
-    imageUrl = await uploadProductImage(formData.productImage); // ✅ ahora sí sube la imagen
+    imageUrl = await uploadProductImage(formData.productImage);
   }
 
   const { data: insertProduct, error } = await supabase
@@ -39,7 +39,7 @@ export const createProduct = async (formData) => {
       fecha_expiracion: formData.fecha_expiracion,
       lugar_almacenamiento: formData.lugar_almacenamiento,
       categoria: formData.categoria,
-      imagen_url: imageUrl, // ✅ guarda la URL pública, no el File
+      imagen_url: imageUrl,
     })
     .select();
 
