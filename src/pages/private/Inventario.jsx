@@ -1,37 +1,37 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Layout } from "../../layout/Layout";
 import { ModalControl } from "../../components/modal/ModalControl";
 import { AddProductModal } from "../../components/modal/content/AddProductModal";
-import { getProducts } from "../../services/productService";
 import { Card } from "../../components/card_product/Card";
-import { useQuery } from "@tanstack/react-query";
+import { useProductContext } from "../../context/ProductContext";
 
 export const Inventario = () => {
-  const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("all");
-  const [currentPage, setCurrentPage] = useState(1);
-  const {
-    data: products,
-    isLoading,
-    isError,
-    error,
-  } = useQuery({
-    queryKey: ["products"],
-    queryFn: getProducts,
-    refetchType: "active",
-  });
-  if (isLoading) return <p>Cargando...</p>;
-  if (isError) return <p>Error: {error.message}</p>;
-
+  const { products, categoria } = useProductContext();
+  const [filtro, setFiltro] = useState(null);
   const tabs = [
     { id: "all", label: "All Products" },
     { id: "expiring", label: "Expiring Soon" },
     { id: "orders", label: "Stock Orders" },
   ];
 
+  const filteredProducts = useMemo(() => {
+    let result = products;
+    if (filtro) {
+      result = result.filter((p) => p.categoria === filtro);
+    }
+    if (activeTab === "orders") {
+      result = result.filter((p) => p.cantidad <= 5);
+    } else if (activeTab === "expiring") {
+      result = result.filter((p) => p.fecha_expiracion);
+    }
+
+    return result;
+  }, [products, activeTab, filtro]);
+
+  console.log(products, categoria);
   return (
     <Layout>
-      {/* Top Navigation Bar */}
       {/* Main Content Area */}
       <main className="max-w-360 mx-auto p-6 lg:p-10">
         {/* Dashboard Header */}
@@ -41,7 +41,7 @@ export const Inventario = () => {
           </ModalControl>
         </div>
 
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+        <div className="flex flex-col items-center md:flex-row md:items-end justify-between gap-4 mb-8">
           <div>
             <h2 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">
               Inventory Grid View
@@ -50,16 +50,34 @@ export const Inventario = () => {
               Real-time stock monitoring and replenishment control.
             </p>
           </div>
-
           {/* Quick Filters / Tabs */}
-          <div className="bg-slate-100 dark:bg-slate-800 p-1 rounded-xl flex gap-1">
+          <div className="flex items-center justify-center">
+            <label className="flex gap-5">
+              Filtrar por categoria:
+              <select
+                name="categorias"
+                onChange={(e) =>
+                  setFiltro(e.target.value ? Number(e.target.value) : null)
+                }
+              >
+                <option value="">Todas</option>
+                {categoria.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.nombre}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+          {/* Quick Filters / Tabs */}
+          <div className="bg-slate-100 dark:bg-slate-800 p-1 rounded-xl flex gap-1 ">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => {
                   setActiveTab(tab.id);
                 }}
-                className={`px-5 py-2 rounded-lg text-sm font-semibold transition-all ${
+                className={`px-5 py-2 rounded-lg text-sm font-semibold transition-all cursor-pointer ${
                   activeTab === tab.id
                     ? "bg-white dark:bg-slate-700 shadow-sm font-bold text-primary"
                     : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
@@ -73,7 +91,7 @@ export const Inventario = () => {
 
         {/* Inventory Grid */}
         <div className="grid grid-cols-1 min-h-full  sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
-          {products.map((product) => {
+          {filteredProducts.map((product) => {
             return <Card key={product.id} products={product} />;
           })}
         </div>
