@@ -38,6 +38,7 @@ export const createProduct = async (formData) => {
       impuesto: parseFloat(formData.impuesto),
       fecha_expiracion: formData.fecha_expiracion,
       lugar_almacenamiento: formData.lugar_almacenamiento,
+      categoria: formData.categoria,
       imagen_url: imageUrl, // ✅ guarda la URL pública, no el File
     })
     .select();
@@ -67,4 +68,12 @@ export const uploadProductImage = async (file) => {
   const { data } = supabase.storage.from("img_product").getPublicUrl(filePath);
 
   return data.publicUrl;
+};
+
+export const getCategoria = async () => {
+  const { data, error } = await supabase.from("categoria_productos").select();
+  if (error) {
+    throw new Error(error.message);
+  }
+  return data;
 };
