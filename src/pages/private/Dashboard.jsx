@@ -1,8 +1,9 @@
-import { useState } from "react";
 import { Layout } from "../../layout/Layout";
-
+import { useProductContext } from "../../context/ProductContext";
 export const Dashboard = () => {
-  const [searchQuery, setSearchQuery] = useState("");
+  const { products } = useProductContext();
+
+  const lowStock = products.filter((p) => p.cantidad <= 5).length;
 
   const transactions = [
     {
@@ -59,7 +60,7 @@ export const Dashboard = () => {
     },
     {
       title: "Low Stock Alerts",
-      value: "8 Items",
+      value: `${lowStock}`,
       icon: "warning",
       iconBg: "bg-orange-500/10",
       iconColor: "text-orange-500",
