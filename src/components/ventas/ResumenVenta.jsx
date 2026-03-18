@@ -11,6 +11,7 @@ export const ResumenVenta = ({
 }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const { registrar, loadingRegistro } = useRegistrarVenta(onVentaExitosa);
   const queryClient = useQueryClient();
   const procesarVenta = async () => {
     if (carrito.length === 0) return;
@@ -18,15 +19,7 @@ export const ResumenVenta = ({
     setError(null);
 
     try {
-      const { error } = await supabase.rpc("registrar_venta", {
-        p_cliente_id: clienteId,
-        p_total: total,
-        p_items: carrito.map(({ id, cantidad, precio_venta }) => ({
-          id,
-          cantidad,
-          precio_venta,
-        })),
-      });
+      await registrar({ clienteId, total, carrito });
 
       if (error) throw error;
 
