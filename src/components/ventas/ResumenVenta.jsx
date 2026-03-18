@@ -1,8 +1,6 @@
 import { useState } from "react";
-import { supabase } from "../../supabase/Client";
 import { BuscadorCliente } from "./BuscadorCliente";
-import { actualizarStock } from "../../services/productService";
-import { useQueryClient } from "@tanstack/react-query";
+import { useRegistrarVenta } from "../../hooks/useVenta";
 export const ResumenVenta = ({
   carrito,
   total,
@@ -12,45 +10,17 @@ export const ResumenVenta = ({
 }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const queryClient = useQueryClient();
+  const { registrar, loadingRegistro } = useRegistrarVenta(onVentaExitosa);
+
   const procesarVenta = async () => {
     if (carrito.length === 0) return;
-    setLoading(true);
     setError(null);
 
     try {
-      // 1. Crear la venta
-      const { data: venta, error: ventaError } = await supabase
-        .from("ventas")
-        .insert({ cliente_id: clienteId, total, estado: "pendiente" })
-        .select()
-        .single();
-
-      if (ventaError) throw ventaError;
-
-      // 2. Insertar detalle
-      const detalle = carrito.map((item) => ({
-        venta_id: venta.id,
-        producto_id: item.id,
-        cantidad: item.cantidad,
-        precio_unitario: item.precio_venta,
-      }));
-
-      const { error: detalleError } = await supabase
-        .from("ventas_detalle")
-        .insert(detalle);
-
-      if (detalleError) throw detalleError;
-
-      await actualizarStock(carrito);
-      await queryClient.refetchQueries({
-        queryKey: ["products"],
-      });
+      await registrar({ clienteId, total, carrito });
       onVentaExitosa();
     } catch (err) {
       setError(err.message ?? "Error al procesar la venta");
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -84,7 +54,7 @@ export const ResumenVenta = ({
         disabled={carrito.length === 0 || loading}
         className="btn btn-primary w-full disabled:opacity-50"
       >
-        {loading ? "Procesando..." : "Procesar venta"}
+        {loadingRegistro ? "Procesando..." : "Procesar venta"}
       </button>
     </div>
   );

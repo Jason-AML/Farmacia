@@ -1,5 +1,10 @@
-import { useQuery } from "@tanstack/react-query";
-import { getVenta, sumaVentaHoy, sumaVentaMes } from "../services/ventaService";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  getVenta,
+  registrarVenta,
+  sumaVentaHoy,
+  sumaVentaMes,
+} from "../services/ventaService";
 
 export const useVenta = () => {
   const { data: venta = [], isLoading: loadingVenta } = useQuery({
@@ -26,4 +31,17 @@ export const useSumaVentaMes = () => {
   });
 
   return { sumaVentasMes, loadingSumaVentaMes };
+};
+
+export const useRegistrarVenta = () => {
+  const queryClient = useQueryClient();
+
+  const { mutateAsync: registrar, isPending: loadingRegistro } = useMutation({
+    mutationFn: registrarVenta,
+    onSuccess: () => {
+      queryClient.refetchQueries({ queryKey: ["products"] });
+    },
+  });
+
+  return { registrar, loadingRegistro };
 };

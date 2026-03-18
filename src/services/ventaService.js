@@ -34,3 +34,16 @@ export const actualizarEstadoVenta = async (ventaId, nuevoEstado) => {
   if (error) throw error;
   return data;
 };
+export const registrarVenta = async ({ clienteId, total, carrito }) => {
+  const { error } = await supabase.rpc("registrar_venta", {
+    p_cliente_id: clienteId,
+    p_total: total,
+    p_items: carrito.map(({ id, cantidad, precio_venta }) => ({
+      id,
+      cantidad,
+      precio_venta,
+    })),
+  });
+
+  if (error) throw error;
+};
