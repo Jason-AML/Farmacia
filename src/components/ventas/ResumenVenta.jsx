@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { BuscadorCliente } from "./BuscadorCliente";
-import { useQueryClient } from "@tanstack/react-query";
 import { useRegistrarVenta } from "../../hooks/useVenta";
 export const ResumenVenta = ({
   carrito,
@@ -12,23 +11,16 @@ export const ResumenVenta = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const { registrar, loadingRegistro } = useRegistrarVenta(onVentaExitosa);
-  const queryClient = useQueryClient();
+
   const procesarVenta = async () => {
     if (carrito.length === 0) return;
-    setLoading(true);
     setError(null);
 
     try {
       await registrar({ clienteId, total, carrito });
-
-      if (error) throw error;
-
-      await queryClient.refetchQueries({ queryKey: ["products"] });
       onVentaExitosa();
     } catch (err) {
       setError(err.message ?? "Error al procesar la venta");
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -62,7 +54,7 @@ export const ResumenVenta = ({
         disabled={carrito.length === 0 || loading}
         className="btn btn-primary w-full disabled:opacity-50"
       >
-        {loading ? "Procesando..." : "Procesar venta"}
+        {loadingRegistro ? "Procesando..." : "Procesar venta"}
       </button>
     </div>
   );

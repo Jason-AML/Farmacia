@@ -33,14 +33,13 @@ export const useSumaVentaMes = () => {
   return { sumaVentasMes, loadingSumaVentaMes };
 };
 
-export const useRegistrarVenta = (onVentaExitosa) => {
+export const useRegistrarVenta = () => {
   const queryClient = useQueryClient();
 
   const { mutateAsync: registrar, isPending: loadingRegistro } = useMutation({
     mutationFn: registrarVenta,
-    onSuccess: async () => {
-      await queryClient.refetchQueries({ queryKey: ["products"] });
-      onVentaExitosa();
+    onSuccess: () => {
+      queryClient.refetchQueries({ queryKey: ["products"] });
     },
   });
 
