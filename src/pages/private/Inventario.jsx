@@ -4,10 +4,12 @@ import { ModalControl } from "../../components/modal/ModalControl";
 import { AddProductModal } from "../../components/modal/content/AddProductModal";
 import { Card } from "../../components/card_product/Card";
 import { useProductContext } from "../../context/ProductContext";
+import { useUserRole } from "../../hooks/useUserRole";
 
 export const Inventario = () => {
   const [activeTab, setActiveTab] = useState("all");
   const { products, categoria } = useProductContext();
+  const { role } = useUserRole();
   const [filtro, setFiltro] = useState(null);
   const tabs = [
     { id: "all", label: "All Products" },
@@ -29,13 +31,12 @@ export const Inventario = () => {
     return result;
   }, [products, activeTab, filtro]);
 
-  console.log(products, categoria);
   return (
     <Layout>
       {/* Main Content Area */}
-      <main className="max-w-360 mx-auto p-6 lg:p-10">
+      <div className="max-w-360 mx-auto p-6 lg:p-10">
         {/* Dashboard Header */}
-        <div className="flex justify-end">
+        <div className={`flex justify-end ${role !== "admin" && "invisible"}`}>
           <ModalControl action="Add Product">
             {({ closeModal }) => <AddProductModal closeModal={closeModal} />}
           </ModalControl>
@@ -138,7 +139,7 @@ export const Inventario = () => {
             </button>
           </div>
         </div>
-      </main>
+      </div>
 
       {/* Floating Action for Mobile */}
       <button className="fixed bottom-6 right-6 lg:hidden h-14 w-14 bg-primary text-white rounded-full shadow-2xl flex items-center justify-center z-50">
