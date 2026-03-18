@@ -77,3 +77,23 @@ export const getCategoria = async () => {
   }
   return data;
 };
+export const actualizarStock = async (carrito) => {
+  const updates = carrito.map((item) =>
+    supabase.rpc("decrementar_stock", {
+      p_producto_id: item.id,
+      p_cantidad: item.cantidad,
+    }),
+  );
+  await Promise.all(updates);
+};
+
+export const añadirStock = async (id, cantidad) => {
+  const { data, error } = await supabase
+    .from("productos")
+    .update({ cantidad })
+    .eq("id", id)
+    .select();
+
+  if (error) throw error;
+  return data;
+};

@@ -20,7 +20,8 @@ const ProductProvider = ({ children }) => {
   } = useQuery({
     queryKey: ["products"],
     queryFn: getProducts,
-    refetchType: "active",
+    placeholderData: (prev) => prev, // ← mantiene los datos anteriores mientras refetchea
+    notifyOnChangeProps: ["data"],
   });
 
   const {
@@ -31,7 +32,8 @@ const ProductProvider = ({ children }) => {
   } = useQuery({
     queryKey: ["categoria"],
     queryFn: getCategoria,
-    refetchType: "active",
+    placeholderData: (prev) => prev,
+    notifyOnChangeProps: ["data"],
   });
 
   if (isLoadingProducts || isLoadingCategoria) return <Spinner />;

@@ -3,8 +3,9 @@ import {
   logoutService,
   registerService,
 } from "../services/authService";
-
+import { useQueryClient } from "@tanstack/react-query";
 export const useAuthUser = () => {
+  const queryClient = useQueryClient();
   const signUpNewUser = async (email, password) => {
     const { data, error } = await registerService(email, password);
 
@@ -36,7 +37,7 @@ export const useAuthUser = () => {
 
   const logoutUser = async () => {
     await logoutService();
+    queryClient.removeQueries({ queryKey: ["userRole"] });
   };
-
   return { signUpNewUser, logoutUser, signUpUser };
 };

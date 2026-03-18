@@ -1,44 +1,13 @@
 import { Layout } from "../../layout/Layout";
 import { useProductContext } from "../../context/ProductContext";
+import { useSumaVenta, useVenta, useSumaVentaMes } from "../../hooks/useVenta";
+
 export const Dashboard = () => {
   const { products } = useProductContext();
-
+  const { venta } = useVenta();
+  const { sumaVentas } = useSumaVenta();
+  const { sumaVentasMes } = useSumaVentaMes();
   const lowStock = products.filter((p) => p.cantidad <= 5).length;
-
-  const transactions = [
-    {
-      id: "#TXN-8902",
-      customer: "James Miller",
-      medicine: "Amoxicillin (500mg)",
-      amount: "$45.00",
-      status: "Completed",
-      statusColor: "emerald",
-    },
-    {
-      id: "#TXN-8901",
-      customer: "Alice Thompson",
-      medicine: "Lisinopril (10mg)",
-      amount: "$22.50",
-      status: "Pending",
-      statusColor: "amber",
-    },
-    {
-      id: "#TXN-8899",
-      customer: "Robert Chen",
-      medicine: "Metformin (500mg)",
-      amount: "$12.00",
-      status: "Completed",
-      statusColor: "emerald",
-    },
-    {
-      id: "#TXN-8898",
-      customer: "Emily Davis",
-      medicine: "Atorvastatin (20mg)",
-      amount: "$68.40",
-      status: "Cancelled",
-      statusColor: "red",
-    },
-  ];
 
   const topMedicines = [
     { name: "Amoxicillin", units: 842, percentage: 85 },
@@ -51,7 +20,7 @@ export const Dashboard = () => {
   const kpiCards = [
     {
       title: "Total Sales Today",
-      value: "$1,240.00",
+      value: sumaVentas,
       icon: "payments",
       iconBg: "bg-primary/10",
       iconColor: "text-primary",
@@ -78,7 +47,7 @@ export const Dashboard = () => {
     },
     {
       title: "Monthly Revenue",
-      value: "$5,820.00",
+      value: sumaVentasMes,
       icon: "insights",
       iconBg: "bg-purple-500/10",
       iconColor: "text-purple-500",
@@ -87,19 +56,17 @@ export const Dashboard = () => {
     },
   ];
 
-  // Helper para los colores de status
   const getStatusClasses = (color) => {
     const colors = {
-      emerald:
+      completada:
         "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400",
-      amber:
+      pendiente:
         "bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400",
-      red: "bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400",
+      cancelada: "bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400",
     };
     return colors[color] || "";
   };
 
-  // Helper para los badges de KPI
   const getBadgeClasses = (color) => {
     const colors = {
       emerald: "text-emerald-500 bg-emerald-500/10",
@@ -177,28 +144,30 @@ export const Dashboard = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                  {transactions.map((transaction) => (
+                  {venta.map((transaction) => (
                     <tr
                       key={transaction.id}
                       className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors"
                     >
                       <td className="px-6 py-4 text-sm font-medium text-slate-900 dark:text-slate-100">
-                        {transaction.id}
+                        {transaction?.venta_id?.id}
                       </td>
                       <td className="px-6 py-4 text-sm text-slate-700 dark:text-slate-300">
-                        {transaction.customer}
+                        {transaction?.venta_id?.cliente_id?.nombre ??
+                          transaction?.venta_id?.cliente_id?.apellido ??
+                          "sin usuario"}
                       </td>
                       <td className="px-6 py-4 text-sm text-slate-700 dark:text-slate-300">
-                        {transaction.medicine}
+                        {transaction.producto_id.name}
                       </td>
                       <td className="px-6 py-4 text-sm font-bold text-slate-900 dark:text-slate-100">
-                        {transaction.amount}
+                        {transaction.cantidad}
                       </td>
                       <td className="px-6 py-4 text-sm">
                         <span
-                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusClasses(transaction.statusColor)}`}
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusClasses(transaction.venta_id.estado)}`}
                         >
-                          {transaction.status}
+                          {transaction.venta_id.estado}
                         </span>
                       </td>
                     </tr>

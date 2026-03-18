@@ -1,9 +1,11 @@
 import { Link } from "react-router-dom";
 import { useAuthContext } from "../context/AuthContext";
 import { useAuthUser } from "../hooks/useAuthUser";
+import { useUserRole } from "../hooks/useUserRole";
 
 export const SideNavbar = () => {
   const { user, loadingAuth } = useAuthContext();
+  const { role, loadingRole } = useUserRole();
   const { logoutUser } = useAuthUser();
   const navItems = [
     { name: "Dashboard", icon: "dashboard", path: "/dashboard" },
@@ -87,7 +89,7 @@ export const SideNavbar = () => {
                   {user.email}
                 </p>
                 <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
-                  Pharmacist
+                  {loadingRole ? "Cargando..." : (role ?? "Sin rol")}
                 </p>
                 <button onClick={logoutUser} className="btn btn-error">
                   logout
