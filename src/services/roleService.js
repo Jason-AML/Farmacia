@@ -4,10 +4,10 @@ export async function getUserRole() {
   const { data, error } = await supabase
     .from("user_roles")
     .select("role")
-    .single();
+    .maybeSingle();
 
   if (error) throw error;
-  return data.role;
+  return data?.role ?? null;
 }
 
 export async function hasRole(role) {
