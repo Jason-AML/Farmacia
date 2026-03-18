@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { supabase } from "../../supabase/Client";
 import { BuscadorCliente } from "./BuscadorCliente";
 import { useQueryClient } from "@tanstack/react-query";
+import { useRegistrarVenta } from "../../hooks/useVenta";
 export const ResumenVenta = ({
   carrito,
   total,
