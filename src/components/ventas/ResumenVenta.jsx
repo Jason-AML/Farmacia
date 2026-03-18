@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { supabase } from "../../supabase/Client";
 import { BuscadorCliente } from "./BuscadorCliente";
-import { actualizarStock } from "../../services/productService";
 import { useQueryClient } from "@tanstack/react-query";
 export const ResumenVenta = ({
   carrito,
@@ -19,33 +18,19 @@ export const ResumenVenta = ({
     setError(null);
 
     try {
-      // 1. Crear la venta
-      const { data: venta, error: ventaError } = await supabase
-        .from("ventas")
-        .insert({ cliente_id: clienteId, total, estado: "pendiente" })
-        .select()
-        .single();
-
-      if (ventaError) throw ventaError;
-
-      // 2. Insertar detalle
-      const detalle = carrito.map((item) => ({
-        venta_id: venta.id,
-        producto_id: item.id,
-        cantidad: item.cantidad,
-        precio_unitario: item.precio_venta,
-      }));
-
-      const { error: detalleError } = await supabase
-        .from("ventas_detalle")
-        .insert(detalle);
-
-      if (detalleError) throw detalleError;
-
-      await actualizarStock(carrito);
-      await queryClient.refetchQueries({
-        queryKey: ["products"],
+      const { error } = await supabase.rpc("registrar_venta", {
+        p_cliente_id: clienteId,
+        p_total: total,
+        p_items: carrito.map(({ id, cantidad, precio_venta }) => ({
+          id,
+          cantidad,
+          precio_venta,
+        })),
       });
+
+      if (error) throw error;
+
+      await queryClient.refetchQueries({ queryKey: ["products"] });
       onVentaExitosa();
     } catch (err) {
       setError(err.message ?? "Error al procesar la venta");
