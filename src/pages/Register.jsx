@@ -72,7 +72,7 @@ export const Register = () => {
                 handling for modern healthcare providers.
               </p>
             </div>
-            <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black/60 via-transparent to-transparent z-10"></div>
+            <div className="absolute top-0 left-0 w-full h-full bg-linear-to-t from-black/60 via-transparent to-transparent z-10"></div>
           </div>
           {/*<!-- Right Side: Login Form -->*/}
           <div className="w-full lg:w-1/2 flex items-center justify-center p-8 sm:p-12 lg:p-24 bg-white ">
@@ -98,10 +98,18 @@ export const Register = () => {
                 <h1 className="text-3xl font-black tracking-tight @[480px]:text-4xl text-[#0d191b] ">
                   Pharmacy Register
                 </h1>
-                <p className="text-sm font-normal leading-normal text-slate-500 dark:text-slate-400">
-                  Please enter your credentials to access the management
-                  dashboard.
-                </p>
+                <div className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                  <p className=" font-light leading-relaxed opacity-90">
+                    Para probar la aplicación, puedes usar las siguientes
+                    credenciales de prueba:
+                    <br />
+                    Correo:
+                    <span className="font-bold">basemer811@mypethealh.com</span>
+                    <br />
+                    Contraseña:
+                    <span className="font-bold">123123</span>
+                  </p>
+                </div>
               </div>
               {/*<!-- Form Section -->*/}
               <form className="space-y-5" onSubmit={handleSubmit}>
