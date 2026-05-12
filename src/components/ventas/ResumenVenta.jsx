@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { BuscadorCliente } from "./BuscadorCliente";
-import { useRegistrarVenta } from "../../hooks/useVenta";
+import { useVenta } from "../../hooks/useVenta";
+
 export const ResumenVenta = ({
   carrito,
   total,
@@ -8,9 +9,8 @@ export const ResumenVenta = ({
   onClienteChange,
   onVentaExitosa,
 }) => {
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const { registrar, loadingRegistro } = useRegistrarVenta(onVentaExitosa);
+  const { registrar, loadingRegistro } = useVenta();
 
   const procesarVenta = async () => {
     if (carrito.length === 0) return;
@@ -51,7 +51,7 @@ export const ResumenVenta = ({
 
       <button
         onClick={procesarVenta}
-        disabled={carrito.length === 0 || loading}
+        disabled={carrito.length === 0 || loadingRegistro}
         className="btn btn-primary w-full disabled:opacity-50"
       >
         {loadingRegistro ? "Procesando..." : "Procesar venta"}
