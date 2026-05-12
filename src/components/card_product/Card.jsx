@@ -1,26 +1,26 @@
 export const Card = ({ products }) => {
   const getStatus = () => {
-    if (products.cantidad <= products.cantidad_minima) return "critical";
+    if (products.cantidad <= products.cantidad_minima) return "critico";
     if (products.cantidad > products.cantidad_minima && products.cantidad < 20)
-      return "low";
-    return "healthy";
+      return "bajo";
+    return "suficiente";
   };
   const status = getStatus();
   const getStatusClasses = (status) => {
     const classes = {
-      critical: {
+      critico: {
         badge: "bg-red-100 text-red-600",
         text: "text-red-500",
         bar: "bg-red-500",
         border: "hover:border-red-200",
       },
-      low: {
+      bajo: {
         badge: "bg-amber-100 text-amber-600",
         text: "text-amber-500",
         bar: "bg-amber-500",
         border: "hover:border-amber-200",
       },
-      healthy: {
+      suficiente: {
         badge: "bg-emerald-100 text-emerald-600",
         text: "text-emerald-500",
         bar: "bg-emerald-500",
@@ -73,14 +73,14 @@ export const Card = ({ products }) => {
             </span>
           </div>
         </div>
-        {status === "critical" || status === "low" ? (
+        {status === "critico" || status === "bajo" ? (
           <button className="cursor-pointer w-full py-2.5 bg-primary text-white rounded-lg font-bold text-sm flex items-center justify-center gap-2 hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20">
             <span className="material-symbols-outlined text-base">
-              {status === "critical"
+              {status === "critico"
                 ? "shopping_cart_checkout"
                 : "shopping_cart"}
             </span>
-            {status === "critical" ? "Restock Now" : "Restock"}
+            {status === "critico" ? "Restock Ahora" : "Restock"}
           </button>
         ) : (
           <button className="cursor-pointer w-full py-2.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-lg font-bold text-sm flex items-center justify-center gap-2 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
