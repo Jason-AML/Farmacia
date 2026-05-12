@@ -75,12 +75,9 @@ export const SideNavbar = () => {
           <span className="text-sm">Settings</span>
         </a>
         <div className="flex items-center gap-3 px-3 py-4 mt-2">
-          <div
+          <img
             className="size-10 rounded-full bg-slate-200 dark:bg-slate-700 bg-cover bg-center"
-            style={{
-              backgroundImage:
-                "url('https://lh3.googleusercontent.com/aida-public/AB6AXuD_C0bazYmt6unvKXd6MP645XPcCD5KjuZ1JUZ5Ab24QVbhEHhB47nI8po-usMGXjPf51f5ZsQW7cWr7IwSRHiToQkWIp4vPrknl_ItINpmUKLzKimbTax-5YukY_2gpNqhEZqpfd9e0ZF0eZ8Dy_Qp5iCZglmamFU7NIFl02eyjlc2KW_oZsYPNEAyIReUDOEAjNjYMc79NKlJ2Pg39hFgzeRSyKVsVj1UV-TJHuPkevclX_fGTZLmk2DXxSZVFuJItL3_7LigX3o')",
-            }}
+            src="/user-image.png" alt="user"
           />
           <div className="flex-1 overflow-hidden">
             {user ? (
