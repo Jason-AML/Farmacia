@@ -2,9 +2,10 @@ import { supabase } from "../supabase/Client";
 
 export const getVenta = async () => {
   const { data, error } = await supabase
-    .from("ventas_detalle")
+    .from("ventas")
     .select(
-      "*, venta_id(id,total, estado, cliente_id(nombre, apellido)),producto_id(name)",
+      
+      "*,id, cliente_id(nombre, apellido),total,estado",
     )
     .order("created_at", { ascending: false })
     .limit("10");
@@ -47,3 +48,8 @@ export const registrarVenta = async ({ clienteId, total, carrito }) => {
 
   if (error) throw error;
 };
+export const getTopMedicines = async () => {
+  const { data, error } = await supabase.rpc("get_top_productos");
+  if (error) throw error;
+  return data;
+}
