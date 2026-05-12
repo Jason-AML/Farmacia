@@ -4,44 +4,44 @@ import {
   registrarVenta,
   sumaVentaHoy,
   sumaVentaMes,
+  getTopMedicines
 } from "../services/ventaService";
 
 export const useVenta = () => {
+  const queryClient = useQueryClient();
+
   const { data: venta = [], isLoading: loadingVenta } = useQuery({
     queryKey: ["ventas"],
     queryFn: getVenta,
   });
 
-  return { venta, loadingVenta };
-};
-
-export const useSumaVenta = () => {
   const { data: sumaVentas, isLoading: loadingSumaVenta } = useQuery({
     queryKey: ["sumaVentas"],
     queryFn: sumaVentaHoy,
   });
 
-  return { sumaVentas, loadingSumaVenta };
-};
-
-export const useSumaVentaMes = () => {
   const { data: sumaVentasMes, isLoading: loadingSumaVentaMes } = useQuery({
     queryKey: ["sumaVentasMes"],
     queryFn: sumaVentaMes,
   });
 
-  return { sumaVentasMes, loadingSumaVentaMes };
-};
-
-export const useRegistrarVenta = () => {
-  const queryClient = useQueryClient();
+  const { data: topMedicines, isLoading: loadingTopMedicines } = useQuery({
+    queryKey: ["topMedicines"],
+    queryFn: getTopMedicines,
+  });
 
   const { mutateAsync: registrar, isPending: loadingRegistro } = useMutation({
     mutationFn: registrarVenta,
     onSuccess: () => {
-      queryClient.refetchQueries({ queryKey: ["products"] });
+      queryClient.refetchQueries({ queryKey: ["ventas"] });
     },
   });
 
-  return { registrar, loadingRegistro };
+  return {
+    venta, loadingVenta,
+    sumaVentas, loadingSumaVenta,
+    sumaVentasMes, loadingSumaVentaMes,
+    topMedicines, loadingTopMedicines,
+    registrar, loadingRegistro,
+  };
 };
