@@ -1,34 +1,24 @@
 import { Layout } from "../../layout/Layout";
 import { useProductContext } from "../../context/ProductContext";
-import { useSumaVenta, useVenta, useSumaVentaMes } from "../../hooks/useVenta";
+import { useVenta } from "../../hooks/useVenta";
 
 export const Dashboard = () => {
   const { products } = useProductContext();
-  const { venta } = useVenta();
-  const { sumaVentas } = useSumaVenta();
-  const { sumaVentasMes } = useSumaVentaMes();
-  const lowStock = products.filter((p) => p.cantidad <= 5).length;
+  const { venta, sumaVentasMes, topMedicines } = useVenta();
 
-  const topMedicines = [
-    { name: "Amoxicillin", units: 842, percentage: 85 },
-    { name: "Lisinopril", units: 512, percentage: 60 },
-    { name: "Metformin", units: 429, percentage: 45 },
-    { name: "Atorvastatin", units: 310, percentage: 32 },
-    { name: "Azithromycin", units: 245, percentage: 20 },
-  ];
+  const lowStock = products.filter((p) => p.cantidad <= 10).length;
+  const maxUnits = topMedicines?.[0]?.total_vendido ?? 1;
 
   const kpiCards = [
     {
-      title: "Total Sales Today",
-      value: sumaVentas,
+      title: "Total ventas de hoy",
+      value: sumaVentasMes,
       icon: "payments",
       iconBg: "bg-primary/10",
       iconColor: "text-primary",
-      badge: "+12.5%",
-      badgeColor: "emerald",
     },
     {
-      title: "Low Stock Alerts",
+      title: "Alertas de Stock Bajo",
       value: `${lowStock}`,
       icon: "warning",
       iconBg: "bg-orange-500/10",
@@ -36,23 +26,13 @@ export const Dashboard = () => {
       badge: "Action Required",
       badgeColor: "orange",
     },
+
     {
-      title: "Pending Prescriptions",
-      value: "14",
-      icon: "prescriptions",
-      iconBg: "bg-blue-500/10",
-      iconColor: "text-blue-500",
-      badge: "Active",
-      badgeColor: "blue",
-    },
-    {
-      title: "Monthly Revenue",
+      title: "Ingresos Mensuales",
       value: sumaVentasMes,
       icon: "insights",
       iconBg: "bg-purple-500/10",
       iconColor: "text-purple-500",
-      badge: "-5%",
-      badgeColor: "red",
     },
   ];
 
@@ -126,21 +106,21 @@ export const Dashboard = () => {
           <div className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden flex flex-col">
             <div className="p-6 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
               <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-                Recent Transactions
+                Transacciones Recientes
               </h3>
               <button className="text-sm font-semibold text-primary hover:underline">
-                View All
+                Ver todo
               </button>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-left">
-                <thead className="bg-slate-50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider">
+                <thead className="bg-slate-50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 text-xs font-bold  uppercase tracking-wider">
                   <tr>
-                    <th className="px-6 py-4">Transaction ID</th>
-                    <th className="px-6 py-4">Customer</th>
-                    <th className="px-6 py-4">Medicine</th>
-                    <th className="px-6 py-4">Amount</th>
-                    <th className="px-6 py-4">Status</th>
+                    <th className="px-6 py-4">Transaccion ID</th>
+                    <th className="px-6 py-4">Cliente</th>
+                    <th className="px-6 py-4">Total</th>
+                    <th className="px-6 py-4">Estado</th>
+                    <th className="px-6 py-4">Detalle</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
@@ -150,25 +130,27 @@ export const Dashboard = () => {
                       className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors"
                     >
                       <td className="px-6 py-4 text-sm font-medium text-slate-900 dark:text-slate-100">
-                        {transaction?.venta_id?.id}
+                        {transaction?.id}
                       </td>
                       <td className="px-6 py-4 text-sm text-slate-700 dark:text-slate-300">
-                        {transaction?.venta_id?.cliente_id?.nombre ??
-                          transaction?.venta_id?.cliente_id?.apellido ??
-                          "sin usuario"}
+                        {transaction?.cliente_id?.nombre ??
+                          transaction?.cliente_id?.apellido ??
+                          "Usuario no registrado"}
                       </td>
-                      <td className="px-6 py-4 text-sm text-slate-700 dark:text-slate-300">
-                        {transaction.producto_id.name}
-                      </td>
-                      <td className="px-6 py-4 text-sm font-bold text-slate-900 dark:text-slate-100">
-                        {transaction.cantidad}
+                      <td className="px-6 py-4 text-sm font-bold text-slate-900 dark:text-slate-100 ">
+                        {transaction.total}$
                       </td>
                       <td className="px-6 py-4 text-sm">
                         <span
-                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusClasses(transaction.venta_id.estado)}`}
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusClasses(transaction.estado)}`}
                         >
-                          {transaction.venta_id.estado}
+                          {transaction.estado}
                         </span>
+                      </td>
+                      <td className="px-6 py-4 text-sm">
+                        <button className="btn bg-primary text-white cursor-pointer hover:underline">
+                          Ver Detalle
+                        </button>
                       </td>
                     </tr>
                   ))}
@@ -181,45 +163,49 @@ export const Dashboard = () => {
           <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-6 flex flex-col">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-                Top Selling Medicines
+                Productos mas vendidos
               </h3>
               <span className="material-symbols-outlined text-slate-400 cursor-pointer">
                 more_vert
               </span>
             </div>
             <div className="flex-1 space-y-6">
-              {topMedicines.map((medicine, index) => (
-                <div key={index} className="space-y-2">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="font-medium text-slate-900 dark:text-slate-100">
-                      {medicine.name}
-                    </span>
-                    <span className="text-slate-500 dark:text-slate-400">
-                      {medicine.units} Units
-                    </span>
+              {topMedicines?.length >= 1 ? (
+                topMedicines.map((medicine, index) => (
+                  <div key={medicine.producto_id} className="space-y-2">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="font-medium text-slate-900 dark:text-slate-100">
+                        {medicine.nombre ?? `Producto #${medicine.producto_id}`}
+                      </span>
+                      <span className="text-slate-500 dark:text-slate-400">
+                        {medicine.total_vendido} productos
+                      </span>
+                    </div>
+                    <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2 overflow-hidden">
+                      <div
+                        className="bg-primary h-full rounded-full"
+                        style={{
+                          width: `${(medicine.total_vendido / maxUnits) * 100}%`,
+                          opacity: 1 - index * 0.15,
+                        }}
+                      />
+                    </div>
                   </div>
-                  <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2 overflow-hidden">
-                    <div
-                      className="bg-primary h-full rounded-full"
-                      style={{
-                        width: `${medicine.percentage}%`,
-                        opacity: 1 - index * 0.15,
-                      }}
-                    />
-                  </div>
-                </div>
-              ))}
+                ))
+              ) : (
+                <p className="text-sm text-slate-400">Sin datos</p>
+              )}
             </div>
             <div className="mt-8 pt-6 border-t border-slate-200 dark:border-slate-800 flex items-center justify-center gap-2 text-slate-500 dark:text-slate-400 text-sm">
               <span className="material-symbols-outlined text-base">info</span>
-              <span>Data updated 5 mins ago</span>
+              <span>Actualizacion cada 5 minutos</span>
             </div>
           </div>
         </div>
 
         {/* Footer/Bottom Actions */}
         <div className="flex gap-4">
-          <div className="flex-1 bg-gradient-to-r from-emerald-500 to-primary p-6 rounded-xl flex items-center justify-between text-white shadow-lg shadow-emerald-500/20">
+          <div className="flex-1 bg-linear-to-r from-emerald-500 to-primary p-6 rounded-xl flex items-center justify-between text-white shadow-lg shadow-emerald-500/20">
             <div>
               <h4 className="text-lg font-bold">Need to restock soon?</h4>
               <p className="text-white/80 text-sm">
